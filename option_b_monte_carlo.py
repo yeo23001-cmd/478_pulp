@@ -346,13 +346,21 @@ else:
     
     with col1:
         # Probability of exceeding targets
+        # Initialize target if not in session state
+        if 'target_throughput' not in st.session_state:
+            st.session_state.target_throughput = int(baseline_results['total_throughput'])
+        
         target_input = st.number_input(
             "Target Throughput ($):",
             min_value=0,
             max_value=int(max_throughput),
-            value=int(baseline_results['total_throughput']),
-            step=100
+            value=st.session_state.target_throughput,
+            step=100,
+            key='target_input_widget'
         )
+        
+        # Update session state when user changes it
+        st.session_state.target_throughput = target_input
         
         prob_exceed = (df['throughput'] >= target_input).mean() * 100
         prob_below = (df['throughput'] < target_input).mean() * 100
